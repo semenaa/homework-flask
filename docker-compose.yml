@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   db:
+    container_name: postgres_container
     image: postgres:14.3-alpine3.15
     ports:
       - "5431:5432"
@@ -10,3 +11,9 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
