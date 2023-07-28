@@ -2,12 +2,19 @@ from typing import Type
 from flask import Flask, jsonify, request
 from flask.views import MethodView
 from pydantic import ValidationError
-from
+from sqlalchemy.exc import IntegrityError
 from models import Session, User
 from schema import CreateUser, UpdateUser
+from hashlib import md5
 
 app = Flask(__name__)
 
+
+SALT = '12345'
+def hash_password(password: str):
+    password = f'{SALT}{password}'
+    password = password.encode()
+    return md5(password).hexdigest()
 
 class HttpError(Exception):
     def __init__(self, status_code: int, error_message: dict | list | str):
@@ -30,6 +37,13 @@ def error_handler(err: HttpError):
     return http_response
 
 
+def get_user(session: Session, user_id: int):
+    user = session.get(User, user_id)
+    if user is None:
+        raise HttpError(404, 'No such user')
+    return user
+
+
 class UsersView(MethodView):
 
     def get(self):
@@ -37,19 +51,31 @@ class UsersView(MethodView):
 
     def post(self):
         json_data = validate(CreateUser, request.json)
-
+        json_data['password'] = hash_password(json_data['password'])
         with Session() as session:
             user = User(**json_data)
+            session.add(user)
+            try:
+                session.commit()
+            except IntegrityError:
+                raise HttpError(409, 'User already exists')
+            return jsonify({
+                'status': 'success',
+                'id': user.id
+            })
+
+    def patch(self, user_id: int):
+        json_data = validate(UpdateUser, request.json)
+        with Session() as session:
+            user = get_user(session, user_id)
+            for field, value in json_data.items():
+                setattr(user, field, value)
             session.add(user)
             session.commit()
             return jsonify({
                 'status': 'success',
                 'id': user.id
             })
-
-
-    def patch(self):
-        pass
 
     def delete(self):
         pass
