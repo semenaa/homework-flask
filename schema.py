@@ -1,6 +1,7 @@
+from typing import Optional, Type
+
 import pydantic
 from pydantic import BaseModel, validator
-from typing import Optional, Type
 
 
 class CreateUser(BaseModel):

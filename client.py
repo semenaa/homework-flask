@@ -1,7 +1,5 @@
 import requests
 
-
-
 # response = requests.post(
 #     "http://127.0.0.1:5000/users", json={"name": "user_2", "password": "ff323m3m3232425r2"}
 # )
