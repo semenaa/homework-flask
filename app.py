@@ -32,12 +32,13 @@ def validate(schema: Type[CreateUser] | Type[UpdateUser], json_data):
         validated_data = model.model_dump(exclude_none=True)
     except ValidationError as er:
         raise HttpError(400, er.errors())
+    return validated_data
 
 
 @app.errorhandler
 def error_handler(err: HttpError):
-    http_response = jsonify({'status': 'error', 'description': HttpError.errors()})
-    http_response.status_code = 400
+    http_response = jsonify({'status': 'error', 'description': err.errors()})
+    http_response.status_code = err.status_code
     return http_response
 
 
