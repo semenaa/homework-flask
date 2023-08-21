@@ -28,4 +28,13 @@ class User(Base):
     creation_time = Column(DateTime, server_default=func.now())
 
 
+class Advertisement(Base):
+    __tablename__ = 'advertisements'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    description = Column(String)
+    creation_time = Column(DateTime, server_default=func.now())
+    owner = Column()
+
 Base.metadata.create_all()

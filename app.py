@@ -35,9 +35,9 @@ def validate(schema: Type[CreateUser] | Type[UpdateUser], json_data):
     return validated_data
 
 
-@app.errorhandler
+@app.errorhandler(HttpError)
 def error_handler(err: HttpError):
-    http_response = jsonify({'status': 'error', 'description': err.errors()})
+    http_response = jsonify({'status': 'error', 'description': err.error_message})
     http_response.status_code = err.status_code
     return http_response
 
