@@ -23,7 +23,7 @@ class User(Base):
     __tablename__ = 'app_users'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True, index=True)
+    email = Column(String, nullable=False, unique=True, index=True)
     password = Column(String, nullable=False)
     creation_time = Column(DateTime, server_default=func.now())
 
