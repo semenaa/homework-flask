@@ -5,7 +5,7 @@ from pydantic import BaseModel, validator
 
 
 class CreateUser(BaseModel):
-    name: str
+    email: str
     password: str
 
     def secure_password(cls, value):
@@ -15,7 +15,7 @@ class CreateUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    name: Optional[str]
+    email: Optional[str]
     password: Optional[str]
 
     def secure_password(cls, value):
@@ -23,6 +23,10 @@ class UpdateUser(BaseModel):
             raise ValueError('Password is too short')
         return value
 
+
+class CreateAd(BaseModel):
+    title: str
+    description: str
 
 
 

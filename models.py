@@ -1,9 +1,9 @@
 import os
 from atexit import register
 
-from sqlalchemy import Column, DateTime, Integer, String, create_engine, func
+from sqlalchemy import Column, DateTime, Integer, String, create_engine, func, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 
 PG_USER = os.getenv('PG_USER', 'postgres')
 PG_PASSWORD = os.getenv('PG_PASSWORD', 'postgres')
@@ -27,6 +27,8 @@ class User(Base):
     password = Column(String, nullable=False)
     creation_time = Column(DateTime, server_default=func.now())
 
+    ads = relationship('Advertisement', back_populates='owner', cascade='all, delete')
+
 
 class Advertisement(Base):
     __tablename__ = 'advertisements'
@@ -35,6 +37,9 @@ class Advertisement(Base):
     title = Column(String, nullable=False)
     description = Column(String)
     creation_time = Column(DateTime, server_default=func.now())
-    owner = Column()
+    owner_id = Column(Integer, ForeignKey('app_users.id'))
+
+    owner = relationship('User', back_populates='advertisements')
+
 
 Base.metadata.create_all()
